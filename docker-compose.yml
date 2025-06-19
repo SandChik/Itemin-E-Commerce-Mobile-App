@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # Service untuk Database PostgreSQL
+  db:
+    image: postgres:16-alpine
+    container_name: itemin_db
+    restart: always
+    environment:
+      POSTGRES_USER: itemin_user
+      POSTGRES_PASSWORD: itemin_password
+      POSTGRES_DB: itemin_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Service BARU untuk Backend Go
+  backend:
+    container_name: itemin_backend
+    # 'build:' memberitahu Docker Compose untuk membuat image dari Dockerfile
+    # di dalam direktori './backend'.
+    build: ./backend
+    restart: always
+    ports:
+      # Memetakan port 8080 di komputer kita ke port 8080 di dalam container.
+      - "8080:8080"
+    # 'depends_on' memastikan bahwa service 'db' akan dinyalakan terlebih dahulu
+    # sebelum service 'backend' dinyalakan. Ini sangat penting!
+    depends_on:
+      - db
+
+# Mendefinisikan volume yang akan digunakan oleh service 'db'
+volumes:
+  postgres_data:

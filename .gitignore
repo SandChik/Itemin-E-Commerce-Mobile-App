@@ -1,0 +1,96 @@
+# ===================================================================
+# IDE & Lingkungan Editor
+# ===================================================================
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+.c9/
+*.launch
+*.sublime-workspace
+*.sublime-project
+
+# ===================================================================
+# Flutter / Dart
+# ===================================================================
+/build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+generated_plugin_registrant.dart
+# SEBAIKNYA DIHAPUS: pubspec.lock memastikan versi dependensi yang konsisten
+# **/pubspec.lock
+
+# Direktori build spesifik platform
+/android/.gradle/
+/android/captures/
+/android/local.properties
+/android/gradlew
+/android/gradlew.bat
+/android/gradle/wrapper/gradle-wrapper.jar
+/ios/Pods/
+/ios/Runner.xcworkspace/
+/ios/.symlinks/
+/macos/Flutter/ephemeral/
+/windows/flutter/ephemeral/
+/linux/flutter/ephemeral/
+
+# ===================================================================
+# Go
+# ===================================================================
+/vendor/
+# WAJIB DIHAPUS: go.sum memastikan build yang dapat direproduksi
+# **/go.sum
+
+# Hasil build & file sementara
+/bin/
+/tmp/
+/dist/
+*.exe
+*.test
+*.prof
+# DITAMBAHKAN: Mengabaikan output binary spesifik dari Dockerfile kita
+backend/server
+
+# ===================================================================
+# Docker
+# ===================================================================
+postgres-data/*
+!postgres-data/.gitkeep
+
+# ===================================================================
+# Rahasia, Kunci, dan File Lingkungan
+# ===================================================================
+*.pem
+*.key
+secrets.yaml
+**/.env
+**/.env.*.local
+!**/.env.example
+# File konfigurasi Firebase/Google Services sebaiknya tidak dimasukkan ke Git
+**/google-services.json
+**/GoogleService-Info.plist
+**/firebase_options.dart
+
+# ===================================================================
+# Log, Database Lokal & File Sistem
+# ===================================================================
+*.log
+*.db
+*.sqlite3
+*.db-shm
+*.db-wal
+.DS_Store
+Thumbs.db
+
+# ===================================================================
+# Lain-lain
+# ===================================================================
+coverage/
+*.out
+*.swp
+*~

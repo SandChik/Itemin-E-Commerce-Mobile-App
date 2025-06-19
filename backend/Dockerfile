@@ -1,7 +1,7 @@
 # --- TAHAP 1: BUILDER ---
 # Kita mulai dengan image resmi Go versi 1.22 yang ringan (alpine).
 # Ini adalah lingkungan untuk meng-compile aplikasi kita.
-FROM golang:1.22-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 # Menetapkan direktori kerja di dalam container.
 WORKDIR /app

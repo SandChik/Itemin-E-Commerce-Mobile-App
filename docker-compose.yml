@@ -1,35 +1,33 @@
 services:
   # Service untuk Database PostgreSQL
   db:
-    image: postgres:16-alpine
-    container_name: itemin_db
-    restart: always
+    image: postgres:16-alpine                 # Menggunakan image PostgreSQL versi 16 berbasis Alpine Linux (ringan)
+    container_name: itemin_db                 # Nama container untuk service database
+    restart: always                          # Jika container mati, otomatis dijalankan ulang
     environment:
-      POSTGRES_USER: itemin_user
-      POSTGRES_PASSWORD: itemin_password
-      POSTGRES_DB: itemin_db
+      POSTGRES_USER: itemin_user             # Username database (akan dibuat otomatis oleh image postgres)
+      POSTGRES_PASSWORD: itemin_password     # Password database
+      POSTGRES_DB: itemin_db                 # Nama database utama
     ports:
-      - "5432:5432"
+      - "5432:5432"                         # Mapping port 5432 di host ke port 5432 di container (untuk akses lokal)
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data # Data database disimpan di volume agar tidak hilang saat container dihapus
 
-  # Service BARU untuk Backend Go
+  # Service untuk Backend Go
   backend:
-    container_name: itemin_backend
-    # 'build:' memberitahu Docker Compose untuk membuat image dari Dockerfile
-    # di dalam direktori './backend'.
+    container_name: itemin_backend           # Nama container untuk backend
+    # 'build:' memberitahu Docker Compose untuk membangun image dari Dockerfile di folder ./backend
     build: ./backend
-    restart: always
+    restart: always                          # Jika container mati, otomatis dijalankan ulang
     ports:
-      # Memetakan port 8080 di komputer kita ke port 8080 di dalam container.
-      - "8080:8080"
-    # 'depends_on' memastikan bahwa service 'db' akan dinyalakan terlebih dahulu
-    # sebelum service 'backend' dinyalakan. Ini sangat penting!
+      - "8080:8080"                         # Mapping port 8080 di host ke port 8080 di container (untuk akses API)
+    # 'depends_on' memastikan service db dijalankan dulu sebelum backend (urutan start)
     depends_on:
       - db
     env_file:
-      - ./backend/.env
+      - ./backend/.env                       # Mengambil environment variable (misal DATABASE_URL) dari file .env
 
 # Mendefinisikan volume yang akan digunakan oleh service 'db'
+# Volume ini menyimpan data database secara persisten di luar container
 volumes:
   postgres_data:

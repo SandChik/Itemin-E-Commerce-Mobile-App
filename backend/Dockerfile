@@ -1,50 +1,49 @@
 # --- TAHAP 1: BUILDER ---
-# Kita mulai dengan image resmi Go versi 1.22 yang ringan (alpine).
-# Ini adalah lingkungan untuk meng-compile aplikasi kita.
+# Menggunakan image Go resmi berbasis Alpine Linux (ringan dan cepat).
 FROM golang:1.24-alpine AS builder
 
-# Menetapkan direktori kerja di dalam container.
+# Menetapkan direktori kerja di dalam container builder.
 WORKDIR /app
 
-# Salin file manajemen dependensi terlebih dahulu.
-# Ini memanfaatkan cache Docker. Jika file-file ini tidak berubah, Docker tidak akan mengunduh ulang dependensi.
+# Salin file go.mod dan go.sum terlebih dahulu untuk memanfaatkan cache Docker layer.
 COPY go.mod go.sum ./
+# Download semua dependensi Go yang dibutuhkan project.
 RUN go mod download
 
-# Salin sisa kode sumber proyek kita.
+# Salin seluruh source code project ke dalam container builder.
 COPY . .
 
-# Compile aplikasi Go kita.
-# CGO_ENABLED=0 membuat binary yang statis (tidak bergantung pada library C di sistem).
-# GOOS=linux memastikan binary ini bisa berjalan di lingkungan Linux (seperti image alpine).
+# Compile aplikasi Go menjadi file binary bernama 'server'.
+# CGO_ENABLED=0: hasilkan binary statis (tidak tergantung library C)
+# GOOS=linux: agar binary bisa dijalankan di container Linux
 RUN CGO_ENABLED=0 GOOS=linux go build -o ./server ./cmd/api
 
 # --- TAHAP 2: FINAL ---
-# Kita mulai lagi dari image dasar yang sangat kecil (alpine) untuk hasil akhir.
-# Ini membuat image container kita sangat ringan dan aman.
+# Menggunakan image Alpine Linux yang sangat kecil untuk hasil akhir (production image).
 FROM alpine:latest
 
+# Menetapkan direktori kerja di dalam container final.
 WORKDIR /app
 
-# Install psql untuk migrasi
+# Install psql (PostgreSQL client) agar bisa menjalankan migrasi SQL dari entrypoint.sh
 RUN apk add --no-cache postgresql-client
 
-# Salin HANYA file binary yang sudah di-compile dari tahap 'builder'.
-# Kita tidak perlu membawa seluruh source code Go ke image final.
+# Salin file binary hasil build dari tahap builder ke image final.
 COPY --from=builder /app/server .
 
-# Copy entrypoint script
+# Salin script entrypoint yang akan menjalankan migrasi dan server Go.
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
-# Copy .env jika ada
+# Salin file .env jika ada, agar environment variable bisa digunakan di container.
 COPY .env .
 
-# Copy file migrasi SQL ke image
+# Salin file migrasi SQL dari builder ke image final, agar bisa dijalankan saat container start.
 COPY --from=builder /app/internal/model/migration.sql ./internal/model/migration.sql
 
-# Memberitahu Docker bahwa container ini akan mengekspos port 8080.
+# Memberitahu Docker bahwa container ini akan membuka port 8080 (untuk aplikasi Go).
 EXPOSE 8080
 
-# Ganti CMD dengan entrypoint
+# Menetapkan entrypoint container: jalankan entrypoint.sh (bukan langsung binary Go),
+# agar migrasi database dijalankan sebelum server Go dijalankan.
 ENTRYPOINT ["./entrypoint.sh"]

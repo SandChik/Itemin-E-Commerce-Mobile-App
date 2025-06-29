@@ -25,6 +25,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Itemin - Produk Digital'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/register');
+            },
+            child: const Text('Daftar', style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
       body: Center(
         // FutureBuilder adalah widget canggih untuk menampilkan data dari API.

@@ -7,9 +7,15 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"itemin.app/backend/internal/handler" // Mengimpor handler yang akan kita buat
+	"itemin.app/backend/internal/model"
 )
 
 func main() {
+	// Inisialisasi koneksi database
+	if err := model.InitDB(); err != nil {
+		panic("Gagal koneksi database: " + err.Error())
+	}
+
 	// 1. Membuat instance Echo, ini adalah server utama kita.
 	e := echo.New()
 
@@ -31,10 +37,12 @@ func main() {
 
 	// Membuat instance dari product handler kita.
 	productHandler := handler.NewProductHandler()
+	userHandler := handler.NewUserHandler()
 	// Menetapkan bahwa jika ada permintaan GET ke /api/v1/products,
 	// maka akan ditangani oleh fungsi GetProducts dari productHandler.
 	v1.GET("/products", productHandler.GetProducts)
-
+	// Endpoint registrasi user
+	v1.POST("/register", userHandler.Register)
 
 	// 4. Menjalankan server
 	e.Logger.Fatal(e.Start(":8080")) // Menjalankan server di port 8080.

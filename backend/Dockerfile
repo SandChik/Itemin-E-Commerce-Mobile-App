@@ -26,12 +26,25 @@ FROM alpine:latest
 
 WORKDIR /app
 
+# Install psql untuk migrasi
+RUN apk add --no-cache postgresql-client
+
 # Salin HANYA file binary yang sudah di-compile dari tahap 'builder'.
 # Kita tidak perlu membawa seluruh source code Go ke image final.
 COPY --from=builder /app/server .
 
+# Copy entrypoint script
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
+
+# Copy .env jika ada
+COPY .env .
+
+# Copy file migrasi SQL ke image
+COPY --from=builder /app/internal/model/migration.sql ./internal/model/migration.sql
+
 # Memberitahu Docker bahwa container ini akan mengekspos port 8080.
 EXPOSE 8080
 
-# Perintah yang akan dijalankan saat container ini dinyalakan.
-CMD ["./server"]
+# Ganti CMD dengan entrypoint
+ENTRYPOINT ["./entrypoint.sh"]

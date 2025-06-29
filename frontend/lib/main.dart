@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/home_screen.dart'; // Impor layar home kita
+import 'package:frontend/screens/register_screen.dart'; // Impor layar register kita
 
 
 void main() {
@@ -18,6 +19,9 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark, // Tema gelap agar keren
       ),
       home: const HomeScreen(), // Layar pertama yang ditampilkan adalah HomeScreen
+      routes: {
+        '/register': (context) => const RegisterScreen(),
+      },
     );
   }
 }

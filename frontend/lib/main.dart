@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/home_screen.dart'; // Impor layar home kita
 import 'package:frontend/screens/register_screen.dart'; // Impor layar register kita
+import 'package:frontend/screens/login_screen.dart'; // Impor layar login
 
 // Fungsi utama yang pertama kali dijalankan saat aplikasi Flutter dimulai
 void main() {
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         // Daftar route (alamat layar) yang bisa diakses di aplikasi
         // '/register' akan membuka RegisterScreen
         '/register': (context) => const RegisterScreen(),
+        '/login': (context) => const LoginScreen(),
       },
     );
   }

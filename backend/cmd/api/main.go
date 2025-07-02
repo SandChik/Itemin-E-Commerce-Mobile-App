@@ -37,14 +37,17 @@ func main() {
 	// Membuat group route di bawah /api/v1 agar rapi dan mudah di-maintain.
 	v1 := e.Group("/api/v1")
 
-	// Membuat instance handler produk dan user.
+	// Membuat instance handler produk, user, dan login.
 	productHandler := handler.NewProductHandler()
 	userHandler := handler.NewUserHandler()
+	loginHandler := handler.NewLoginHandler()
 
 	// Mendefinisikan endpoint GET /api/v1/products untuk mengambil daftar produk.
 	v1.GET("/products", productHandler.GetProducts)
 	// Mendefinisikan endpoint POST /api/v1/register untuk registrasi user baru.
 	v1.POST("/register", userHandler.Register)
+	// Endpoint login user
+	v1.POST("/login", loginHandler.Login)
 
 	// Menjalankan server pada port 8080.
 	// Jika terjadi error saat menjalankan server, aplikasi akan berhenti.

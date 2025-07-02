@@ -34,6 +34,13 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: const Text('Daftar', style: TextStyle(color: Colors.white)),
           ),
+          // Tambahkan tombol Login di AppBar
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/login'); // Navigasi ke route '/login'
+            },
+            child: const Text('Login', style: TextStyle(color: Colors.white)),
+          ),
         ],
       ),
       body: Center(

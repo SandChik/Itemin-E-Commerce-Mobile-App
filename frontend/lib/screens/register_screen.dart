@@ -34,11 +34,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }),
       );
       if (response.statusCode == 201) {
-        // Jika sukses, tampilkan notifikasi dan kembali ke halaman sebelumnya
+        // Jika sukses, tampilkan notifikasi dan pindah ke HomeScreen
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Registrasi berhasil!')),
         );
-        Navigator.pop(context);
+        Navigator.pushNamedAndRemoveUntil(context, '/products', (route) => false); // Pindah ke Home dan hapus semua route sebelumnya
       } else {
         // Jika gagal, tampilkan pesan error dari backend
         final data = jsonDecode(response.body);

@@ -7,35 +7,49 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"itemin.app/backend/internal/handler" // Mengimpor handler yang akan kita buat
+	"itemin.app/backend/internal/model"
 )
 
 func main() {
-	// 1. Membuat instance Echo, ini adalah server utama kita.
+	// Inisialisasi koneksi database PostgreSQL.
+	// Jika gagal, aplikasi akan berhenti dan menampilkan pesan error.
+	if err := model.InitDB(); err != nil {
+		panic("Gagal koneksi database: " + err.Error())
+	}
+
+	// Membuat instance Echo, framework web utama yang akan menangani semua request HTTP.
 	e := echo.New()
 
-	// 2. Middleware (Perangkat Lunak Perantara)
-	// Ini adalah fungsi-fungsi yang dijalankan pada setiap permintaan sebelum ditangani oleh handler.
-	e.Use(middleware.Logger())  // Untuk mencatat (log) setiap permintaan yang masuk ke terminal.
-	e.Use(middleware.Recover()) // Untuk mencegah server mati jika terjadi error tak terduga.
-	e.Use(middleware.CORS())    // PENTING: Agar aplikasi Flutter kita nanti diizinkan untuk "berbicara" dengan server ini.
+	// Middleware adalah fungsi yang dijalankan sebelum handler utama.
+	// Logger: mencatat semua request ke terminal/log.
+	// Recover: mencegah server mati jika terjadi panic/error tak terduga.
+	// CORS: mengizinkan request dari domain lain (misal dari aplikasi Flutter).
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(middleware.CORS())
 
-	// 3. Routes (Rute / Alamat URL)
-	// Mendefinisikan alamat-alamat URL yang bisa diakses.
+	// Mendefinisikan route sederhana untuk health check.
+	// GET /health akan mengembalikan status OK jika server hidup.
 	e.GET("/health", func(c echo.Context) error {
-		// Ini adalah rute sederhana untuk mengecek apakah server hidup.
 		return c.JSON(http.StatusOK, map[string]string{"status": "ok"})
 	})
 
-	// Kita kelompokkan semua rute API di bawah /api/v1 agar rapi.
+	// Membuat group route di bawah /api/v1 agar rapi dan mudah di-maintain.
 	v1 := e.Group("/api/v1")
 
-	// Membuat instance dari product handler kita.
+	// Membuat instance handler produk, user, dan login.
 	productHandler := handler.NewProductHandler()
-	// Menetapkan bahwa jika ada permintaan GET ke /api/v1/products,
-	// maka akan ditangani oleh fungsi GetProducts dari productHandler.
+	userHandler := handler.NewUserHandler()
+	loginHandler := handler.NewLoginHandler()
+
+	// Mendefinisikan endpoint GET /api/v1/products untuk mengambil daftar produk.
 	v1.GET("/products", productHandler.GetProducts)
+	// Mendefinisikan endpoint POST /api/v1/register untuk registrasi user baru.
+	v1.POST("/register", userHandler.Register)
+	// Endpoint login user
+	v1.POST("/login", loginHandler.Login)
 
-
-	// 4. Menjalankan server
-	e.Logger.Fatal(e.Start(":8080")) // Menjalankan server di port 8080.
+	// Menjalankan server pada port 8080.
+	// Jika terjadi error saat menjalankan server, aplikasi akan berhenti.
+	e.Logger.Fatal(e.Start(":8080"))
 }

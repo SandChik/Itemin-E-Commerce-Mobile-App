@@ -41,7 +41,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Registrasi berhasil!')),
         );
-        Navigator.pushNamedAndRemoveUntil(context, '/products', (route) => false); // Pindah ke Home dan hapus semua route sebelumnya
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false); // Pindah ke Home dan hapus semua route sebelumnya
         return; // Hentikan eksekusi agar tidak lanjut ke blok finally
       } else {
         // Jika gagal, tampilkan pesan error dari backend

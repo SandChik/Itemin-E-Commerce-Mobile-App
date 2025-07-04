@@ -67,27 +67,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Hapus backgroundColor dari Scaffold, gunakan gradient di Container
-      appBar: AppBar(title: const Text('Registrasi Akun')), // Judul AppBar
+      backgroundColor: const Color(0xFF1C2331), // Warna latar belakang utama
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, '/welcome');
+          },
+        ), // Tombol back custom
+        title: const Text('Registrasi Akun'),
+        backgroundColor: const Color(0xFF1C2331), // Samakan warna AppBar dengan background
+        elevation: 0, // Hilangkan shadow agar lebih rata
+      ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color.fromARGB(1, 54, 62, 81), // Biru muda
-              Color.fromARGB(1, 24, 28, 36), // Biru tua
-            ],
-          ),
         ),
         child: Column(
           children: [
             const SizedBox(height: 32),
             Image.asset(
               'assets/images/logo_itemin.png', // Gambar logo Itemin
-              height: 100, // Tinggi gambar
+              height: 200, // Tinggi gambar
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -107,6 +109,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           labelStyle: TextStyle(color: Colors.black), // Warna label
                           filled: true,
                           fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
                         ),
                         validator: (value) => value == null || value.isEmpty ? 'Email wajib diisi' : null,
                       ),
@@ -120,6 +125,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           labelStyle: const TextStyle(color: Colors.black), // Warna label
                           filled: true,
                           fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
                           suffixIcon: IconButton(
                             icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
                             onPressed: () {
@@ -142,6 +150,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           labelStyle: const TextStyle(color: Colors.black), // Warna label
                           filled: true,
                           fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
                           suffixIcon: IconButton(
                             icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
                             onPressed: () {
@@ -181,6 +192,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ? const CircularProgressIndicator(color: Colors.white) // Loading spinner
                               : const Text('SIGN UP'), // Teks tombol
                         ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'ALREADY HAVE AN ACCOUNT?',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushReplacementNamed(context, '/login');
+                            },
+                            child: const Text(
+                              'LOG IN',
+                              style: TextStyle(
+                                color: Colors.blueAccent,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

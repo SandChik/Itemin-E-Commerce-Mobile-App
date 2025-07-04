@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -35,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login berhasil!')),
         );
-        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
       } else {
           try {
             final data = jsonDecode(response.body);
@@ -62,46 +64,111 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      backgroundColor: const Color(0xFF1C2331), // Ganti dengan warna yang diinginkan
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, '/register'); // Navigasi ke halaman register
+          },
+        ), // Tombol back custom
+        title: const Text('Login'),
+        backgroundColor: const Color(0xFF1C2331), // Samakan warna AppBar dengan background
+        elevation: 0, // Hilangkan shadow agar lebih rata),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                validator: (value) => value == null || value.isEmpty ? 'Email wajib diisi' : null,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start, // Logo di atas
+          children: [
+            const SizedBox(height: 31),
+            Image.asset(
+              'assets/images/logo_itemin.png', // Gambar logo Itemin
+              height: 200, // Tinggi gambar lebih kecil agar proporsional
+            ),
+            const SizedBox(height: 32), // Jarak lebih besar setelah logo
+            Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextFormField(
+                    controller: _emailController,
+                    style: const TextStyle(color: Colors.black),
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: TextStyle(color: Colors.black), // Warna label
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                    ),
+                    validator: (value) => value == null || value.isEmpty ? 'Email wajib diisi' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      labelStyle: TextStyle(color: Colors.black), // Warna label
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                    ),
+                    obscureText: true,
+                    validator: (value) => value == null || value.isEmpty ? 'Password wajib diisi' : null,
+                  ),
+                  const SizedBox(height: 24),
+                  if (_errorMessage != null)
+                    Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue, // Warna biru untuk tombol
+                        foregroundColor: Colors.white, // Warna teks putih
+                      ),
+                      onPressed: _isLoading
+                          ? null
+                          : () {
+                              if (_formKey.currentState!.validate()) {
+                                _login();
+                              }
+                            },
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('LOG IN'),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "DON'T HAVE AN ACCOUNT?",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushReplacementNamed(context, '/register'); // Navigasi ke halaman register
+                            },
+                            child: const Text(
+                              'SIGN UP',
+                              style: TextStyle(
+                                color: Colors.blueAccent,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                ],
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) => value == null || value.isEmpty ? 'Password wajib diisi' : null,
-              ),
-              const SizedBox(height: 24),
-              if (_errorMessage != null)
-                Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isLoading
-                      ? null
-                      : () {
-                          if (_formKey.currentState!.validate()) {
-                            _login();
-                          }
-                        },
-                  child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Login'),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
